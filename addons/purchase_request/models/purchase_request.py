@@ -3,25 +3,26 @@ from odoo import models, fields, api
 
 class PurchaseRequest(models.Model):
     _name = 'purchase.request'
+    _inherit = ['mail.thread','mail.activity.mixin']
     _rec_name = 'nama'
     _description = 'Permintaan Pembelian'
 
-    nama = fields.Char(string="Nama", readonly=True, default='New')
-    request_date = fields.Date(string="Tanggal Permintaan", default=fields.Date.context_today)
-    requested_by = fields.Many2one('res.users', string="Diminta Oleh", default=lambda self: self.env.user)
-    department = fields.Text(string="Departemen")
+    nama = fields.Char(string="Nama", readonly=True, default='New', tracking=True)
+    request_date = fields.Date(string="Tanggal Permintaan", default=fields.Date.context_today, tracking=True)
+    requested_by = fields.Many2one('res.users', string="Diminta Oleh", default=lambda self: self.env.user, tracking=True)
+    department = fields.Text(string="Departemen", tracking=True)
     purchase_request_state = fields.Selection([
         ('draft', 'Draft'),
         ('submitted','Diajukan'),
         ('approved', 'Disetujui'),
         ('rejected', 'Ditolak'),
-    ], string='Status Permintaan', default='draft', readonly=True)
+    ], string='Status Permintaan', default='draft', readonly=True, tracking=True)
     notes  = fields.Text(string = 'Catatan')
     line_ids = fields.One2many(
         'purchase.request.line', 
         'request_id', 
         string='Lines')
-    rejection_reason = fields.Text(string='Alasan Penolakan', readonly=True)
+    rejection_reason = fields.Text(string='Alasan Penolakan', readonly=True, tracking=True)
 
     @api.model_create_multi
     def create(self, vals_list):

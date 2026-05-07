@@ -5,7 +5,7 @@
     'category': 'Custom',
     'summary':'Modul Untuk Re-check Request Pembelian',
     'author': 'Hussain',
-    'depends': ['base','purchase'],
+    'depends': ['base','mail'],
     'data': [
         'data/sequence.xml',
         'security/ir.model.access.csv',
