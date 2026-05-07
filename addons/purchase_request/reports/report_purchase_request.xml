@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Report Action -->
+    <record id="action_report_purchase_request" model="ir.actions.report">
+        <field name="name">Purchase Request</field>
+        <field name="model">purchase.request</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">purchase_request.report_purchase_request</field>
+        <field name="report_file">purchase_request.report_purchase_request</field>
+        <field name="binding_model_id" ref="model_purchase_request"/>
+    </record>
+
+    <!-- Template -->
+    <template id="report_purchase_request">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.internal_layout">
+                    <div class="page">
+                        <!-- Header -->
+                        <h2 class="text-center">PURCHASE REQUEST</h2>
+                        <h4 class="text-center"><span t-field="doc.nama"/></h4>
+                        <hr/>
+
+                        <!-- Info -->
+                        <table class="table table-sm" style="width:50%">
+                            <tr>
+                                <td><strong>Tanggal</strong></td>
+                                <td><span t-field="doc.request_date"/></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Diminta Oleh</strong></td>
+                                <td><span t-field="doc.requested_by"/></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Departemen</strong></td>
+                                <td><span t-field="doc.department"/></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Status</strong></td>
+                                <td><span t-field="doc.purchase_request_state"/></td>
+                            </tr>
+                        </table>
+
+                        <br/>
+
+                        <!-- Line Items -->
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Nama Produk</th>
+                                    <th>Jumlah</th>
+                                    <th>Satuan</th>
+                                    <th>Harga Estimasi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="doc.line_ids" t-as="line">
+                                    <tr>
+                                        <td><span t-esc="line_index + 1"/></td>
+                                        <td><span t-field="line.product_name"/></td>
+                                        <td><span t-field="line.quantity"/></td>
+                                        <td><span t-field="line.uom"/></td>
+                                        <td><span t-field="line.estimated_price"/></td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+
+                        <!-- Catatan -->
+                        <t t-if="doc.notes">
+                            <br/>
+                            <strong>Catatan:</strong>
+                            <p t-field="doc.notes"/>
+                        </t>
+
+                        <!-- TTD -->
+                        <br/><br/>
+                        <table class="table" style="width:50%">
+                            <tr>
+                                <td class="text-center">
+                                    <p>Diajukan Oleh</p>
+                                    <br/><br/><br/>
+                                    <p><span t-field="doc.requested_by"/></p>
+                                </td>
+                                <td class="text-center">
+                                    <p>Disetujui Oleh</p>
+                                    <br/><br/><br/>
+                                    <p>________________</p>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

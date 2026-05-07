@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+    <!-- tree view -->
+    <record id="view_purchase_request_tree" model="ir.ui.view">
+        <field name="name">purchase.request.tree</field>
+        <field name="model">purchase.request</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="nama"/>
+                <field name="request_date"/>
+                <field name="requested_by"/>
+                <field name="department"/>
+                <field name="purchase_request_state"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_purchase_request_form" model="ir.ui.view">
+        <field name="name">purchase.request.form</field>
+        <field name="model">purchase.request</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+
+                    <group string="Status">
+                        <button name="action_submit" string="Submit" type="object" class="btn-primary" invisible="purchase_request_state != 'draft'"/>
+                        <button name="action_approve" string="Approve" type="object" class="btn-success" invisible="purchase_request_state != 'submitted'"/>
+                        <button name="action_reject" string="Reject" type="object" class="btn-danger" invisible="purchase_request_state != 'submitted'"/>
+                        <button name="action_set_to_draft" string="Reset to Draft" type="object" class="btn-secondary" invisible="purchase_request_state != 'rejected'"/>
+                    </group>
+
+                    <field name="purchase_request_state" widget="statusbar" statusbar_visible="draft,submitted,approved,rejected"/>
+                </header>
+                <sheet>
+                    <group>
+                        <field name="nama"/>
+                        <field name="request_date"/>
+                        <field name="requested_by"/>
+                        <field name="department"/>
+                    </group>
+                    <notebook>
+                        <page string="Daftar Barang" name="lines">
+                            <field name="line_ids">
+                                <tree editable="bottom">
+                                    <field name="product_name"/>
+                                    <field name="quantity"/>
+                                    <field name="uom"/>
+                                    <field name="estimated_price"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Catatan" name="notes">
+                            <field name="notes" placeholder="Tambahkan catatan di sini..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action -->
+     <record id="action_purchase_request" model="ir.actions.act_window">
+        <field name="name">Purchase Request</field>
+        <field name="res_model">purchase.request</field>
+        <field name="view_mode">tree,form</field>
+     </record>
+
+    <!-- Menu -->
+    <menuitem id="menu_purchase_request_root"
+        name="Purchase Request"
+        sequence="20"/>
+
+        <menuitem id="menu_purchase_request"
+        name="Daftar Purchase Request"
+        parent="menu_purchase_request_root"
+        action="action_purchase_request"
+        sequence="10"/>
+    
+    
+
+</odoo>

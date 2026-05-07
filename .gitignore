@@ -1,0 +1,14 @@
+# Ignore everything in the root
+/*
+
+# Unignore .gitignore
+!.gitignore
+
+# Unignore the addons directory
+!/addons/
+
+# Ignore everything inside addons
+/addons/*
+
+# Unignore the purchase_request directory
+!/addons/purchase_request/
