@@ -21,7 +21,7 @@ class PurchaseRequest(models.Model):
         'purchase.request.line', 
         'request_id', 
         string='Lines')
-    
+    rejection_reason = fields.Text(string='Alasan Penolakan', readonly=True)
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -43,9 +43,17 @@ class PurchaseRequest(models.Model):
                 raise ValidationError('Hanya permintaan pembelian yang sudah diajukan yang dapat disetujui.')
             record.purchase_request_state = 'approved'
     def action_reject(self):
-        for record in self:
-            record.purchase_request_state = 'rejected'
-
+        return {
+        'type': 'ir.actions.act_window',
+        'name': 'Alasan Penolakan',
+        'res_model': 'purchase.request.reject.wizard',
+        'view_mode': 'form',
+        'views': [(False, 'form')],
+        'target': 'new',
+        'context': {
+            'default_request_id': self.id,
+        }
+    }
     def action_set_to_draft(self):
         for record in self:
             record.purchase_request_state = 'draft'

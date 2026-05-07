@@ -9,6 +9,7 @@
     'data': [
         'data/sequence.xml',
         'security/ir.model.access.csv',
+        'wizards/reject_wizard_views.xml',
         'views/purchase_request_views.xml',
         'reports/report_purchase_request.xml',
     ],

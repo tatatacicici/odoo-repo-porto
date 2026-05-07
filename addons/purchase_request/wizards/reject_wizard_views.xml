@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<odoo>
+    <record id="view_purchase_request_reject_wizard" model="ir.ui.view">
+        <field name="name">purchase.request.reject.wizard.form</field>
+        <field name="model">purchase.request.reject.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Alasan Penolakan">
+                <group>
+                    <field name="request_id" readonly="1" />
+                    <field name="reason" placeholder="Masukkan alasan penolakan ...." />
+                </group>
+                <footer>
+                    <button name="action_confirm_reject"
+                        string="Konfirmasi Tolak"
+                        type="object"
+                        class="btn-danger" />
+                    <button string="Batal"
+                        class="btn-secondary"
+                        special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>
