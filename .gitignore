@@ -1,8 +1,9 @@
 # Ignore everything in the root
 /*
 
-# Unignore .gitignore
+# Unignore .gitignore and README
 !.gitignore
+!README.md
 
 # Unignore the addons directory
 !/addons/
@@ -10,6 +11,6 @@
 # Ignore everything inside addons
 /addons/*
 
-# Unignore the purchase_request directory
+# Unignore custom addon directories
 !/addons/purchase_request/
-!addons/mrp_custom_qc
+!/addons/mrp_custom_qc/
