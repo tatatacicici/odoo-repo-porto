@@ -12,3 +12,4 @@
 
 # Unignore the purchase_request directory
 !/addons/purchase_request/
+!addons/mrp_custom_qc
