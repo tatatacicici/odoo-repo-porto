@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- 1. Report Action (Muncul di menu Print pada Manufacturing Order) -->
+        <record id="action_report_mrp_qc_certificate" model="ir.actions.report">
+            <field name="name">Job Costing &amp; QC Certificate</field>
+            <field name="model">mrp.production</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">mrp_custom_qc.report_mrp_qc_certificate_doc</field>
+            <field name="report_file">mrp_custom_qc.report_mrp_qc_certificate_doc</field>
+            <field name="print_report_name">'QC_Costing_%s' % (object.name).replace('/', '_')</field>
+            <field name="binding_model_id" ref="mrp.model_mrp_production"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <!-- 2. QWeb Template -->
+        <template id="report_mrp_qc_certificate_doc">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="doc">
+                    <t t-call="web.external_layout">
+                        <div class="page" style="font-size: 13px;">
+                            <!-- Header & Barcode -->
+                            <div class="row mb-3">
+                                <div class="col-8">
+                                    <h3 style="margin-bottom: 2px;">JOB COSTING SHEET &amp; QC CERTIFICATE</h3>
+                                    <p class="text-muted" style="margin: 0;">PT Nusantara Panel Mandiri — Quality &amp; Cost Control Division</p>
+                                </div>
+                                <div class="col-4 text-end">
+                                    <img t-att-src="'/report/barcode/?barcode_type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('Code128', doc.name, 260, 50)" style="width:220px;height:45px;" alt="Barcode"/>
+                                    <div><strong><span t-field="doc.name"/></strong></div>
+                                </div>
+                            </div>
+                            <hr/>
+
+                            <!-- Informasi Umum MO -->
+                            <table class="table table-sm table-borderless">
+                                <tr>
+                                    <td style="width: 20%;"><strong>Produk Jadi:</strong></td>
+                                    <td style="width: 30%;"><span t-field="doc.product_id.display_name"/></td>
+                                    <td style="width: 20%;"><strong>Tanggal Produksi:</strong></td>
+                                    <td style="width: 30%;"><span t-field="doc.date_start"/></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Kuantitas:</strong></td>
+                                    <td><span t-field="doc.product_qty"/> <span t-field="doc.product_uom_id.name"/></td>
+                                    <td><strong>Dokumen Sumber (MTO):</strong></td>
+                                    <td><span t-field="doc.origin"/></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Resep (BoM):</strong></td>
+                                    <td><span t-field="doc.bom_id.display_name"/></td>
+                                    <td><strong>Status Produksi:</strong></td>
+                                    <td><span t-field="doc.state"/></td>
+                                </tr>
+                            </table>
+
+                            <!-- Bagian 1: Hasil Pengujian QC & Telemetri IoT -->
+                            <h5 class="mt-4 mb-2" style="background-color: #f2f2f2; padding: 6px;">1. Hasil Pengujian Quality Control &amp; Telemetri IoT</h5>
+                            <table class="table table-sm table-bordered">
+                                <thead>
+                                    <tr class="bg-light">
+                                        <th>Status QC</th>
+                                        <th>Inspektur QC</th>
+                                        <th class="text-end">Tegangan Uji (V)</th>
+                                        <th class="text-end">Arus Uji (A)</th>
+                                        <th>Waktu Sinkronisasi IoT</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong><span t-field="doc.qc_status"/></strong></td>
+                                        <td><span t-field="doc.qc_inspector_id.name"/></td>
+                                        <td class="text-end"><span t-field="doc.iot_voltage"/> V</td>
+                                        <td class="text-end"><span t-field="doc.iot_current"/> A</td>
+                                        <td><span t-field="doc.iot_last_sync"/></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <p t-if="doc.qc_notes"><strong>Catatan QC / IoT:</strong> <span t-field="doc.qc_notes"/></p>
+
+                            <!-- Bagian 2: Analisis Perbandingan Biaya (Job Costing Variance) -->
+                            <h5 class="mt-4 mb-2" style="background-color: #f2f2f2; padding: 6px;">2. Ringkasan Job Costing (Estimasi BoM vs Realisasi Aktual)</h5>
+                            <table class="table table-sm table-bordered">
+                                <thead>
+                                    <tr class="bg-light">
+                                        <th>Komponen Biaya</th>
+                                        <th class="text-end">Estimasi Standar (BoM)</th>
+                                        <th class="text-end">Realisasi Aktual</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Biaya Komponen Material</td>
+                                        <td class="text-end">Rp <span t-esc="'{:,.2f}'.format(doc.estimated_material_cost)"/></td>
+                                        <td class="text-end">Rp <span t-esc="'{:,.2f}'.format(doc.actual_material_cost)"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Biaya Operasional Work Center (Routing)</td>
+                                        <td class="text-end">Rp <span t-esc="'{:,.2f}'.format(doc.estimated_operation_cost)"/></td>
+                                        <td class="text-end">Rp <span t-esc="'{:,.2f}'.format(doc.actual_operation_cost)"/></td>
+                                    </tr>
+                                    <tr style="font-weight: bold;">
+                                        <td>Total Biaya Produksi</td>
+                                        <td class="text-end">Rp <span t-esc="'{:,.2f}'.format(doc.estimated_total_cost)"/></td>
+                                        <td class="text-end">Rp <span t-esc="'{:,.2f}'.format(doc.actual_total_cost)"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Selisih Biaya (Cost Variance)</strong></td>
+                                        <td colspan="2" class="text-end">
+                                            <strong>Rp <span t-esc="'{:,.2f}'.format(doc.cost_variance_amount)"/> (<span t-esc="'{:.2f}'.format(doc.cost_variance_pct)"/>%)</strong>
+                                            — Status: <span t-field="doc.cost_approval_state"/>
+                                        </td>
+                                    </tr>
+                                    <tr t-if="doc.scrap_cost &gt; 0">
+                                        <td>Biaya Kerugian Scrap QC (Jurnal: <span t-field="doc.scrap_move_id.name"/>)</td>
+                                        <td colspan="2" class="text-end text-danger">
+                                            <strong>Rp <span t-esc="'{:,.2f}'.format(doc.scrap_cost)"/></strong>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <!-- Tanda Tangan Otorisasi -->
+                            <div class="row mt-5 pt-3">
+                                <div class="col-4 text-center">
+                                    <p>Diperiksa Oleh (QC Inspector)</p>
+                                    <br/><br/><br/>
+                                    <p><u><span t-esc="doc.qc_inspector_id.name or '________________________'"/></u></p>
+                                </div>
+                                <div class="col-4 text-center">
+                                    <p>Disetujui Oleh (MRP Manager)</p>
+                                    <br/><br/><br/>
+                                    <p>________________________</p>
+                                </div>
+                                <div class="col-4 text-center">
+                                    <p>Diverifikasi Oleh (Cost Accounting)</p>
+                                    <br/><br/><br/>
+                                    <p>________________________</p>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>
