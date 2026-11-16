@@ -1,20 +1,28 @@
-# 🏭 Odoo 17 Custom Addons
+# 🏭 Odoo 17 Custom Addons — PT Nusantara Panel Mandiri
 
-Kumpulan modul custom Odoo 17 yang dikembangkan sebagai portofolio belajar Odoo development, mencakup manajemen pembelian, manufacturing, dan quality control.
+Kumpulan modul custom Odoo 17 Community yang dikembangkan untuk implementasi ERP **Manufacturing, Cost Control, Accounting Integration & IoT Telemetry** (studi kasus **PT Nusantara Panel Mandiri**), beserta modul pendukung dan latihan pengembangan Odoo.
+
+## 📚 Dokumentasi Proyek (Notion)
+
+Dokumentasi lengkap perancangan fungsional, arsitektur teknis, spesifikasi API, dan hasil verifikasi _System Integration Testing (SIT)_ tersedia pada tautan berikut:
+
+- **Functional Configuration:** [Buka Dokumentasi Functional Configuration di Notion](https://app.notion.com/p/Functional-Configuration-41a64a9d8ba580a7a296c78884a98788?source=copy_link)
+- **Technical Configuration (TDD & SIT Report):** [Buka Dokumentasi Technical Configuration di Notion](https://app.notion.com/p/Technical-Configuration-41a64a9d8ba5805b9067d5301848acd1?source=copy_link)
 
 ## 🛠️ Tech Stack
 
-| Teknologi | Keterangan |
-|---|---|
-| Odoo 17 Community | ERP Framework |
-| Python 3 | Backend logic & ORM |
-| XML (QWeb, Views) | View definitions & reports |
-| PostgreSQL 15 | Database |
-| Docker & Docker Compose | Containerized environment |
+| Teknologi               | Keterangan                                         |
+| ----------------------- | -------------------------------------------------- |
+| Odoo 17 Community       | ERP Framework (`mrp`, `account`, `mail`)           |
+| Python 3.10+            | Backend logic, ORM, REST Controller & `xlsxwriter` |
+| XML (QWeb, Views)       | View inheritance, security rules & PDF reports     |
+| PostgreSQL 15           | Database                                           |
+| Docker & Docker Compose | Containerized environment                          |
 
 ## 📦 Modul yang Tersedia
 
 ### 1. [`purchase_request`](./addons/purchase_request/)
+
 Modul manajemen permintaan pembelian internal sebelum dibuat Purchase Order resmi.
 
 - Approval workflow: **Draft → Diajukan → Disetujui / Ditolak**
@@ -22,21 +30,26 @@ Modul manajemen permintaan pembelian internal sebelum dibuat Purchase Order resm
 - Reject wizard dengan alasan penolakan
 - PDF report dengan tanda tangan
 
-### 2. [`mrp_custom_qc`](./addons/mrp_custom_qc/)
-Ekstensi modul Manufacturing (MRP) dengan fitur Quality Control terintegrasi.
+### 2. [`mrp_custom_qc`](./addons/mrp_custom_qc/) _(Nusantara MRP Quality, Cost Control & IoT)_
 
-- Tab Quality Control di form Manufacturing Order
-- Blokir penyelesaian produksi jika QC belum lolos
-- Auto-generate Purchase Request saat stok bahan baku kurang
+Ekstensi modul Manufacturing (`mrp`) & Accounting (`account`) untuk kontrol kualitas produksi, pengendalian biaya (_job costing_), pelaporan, dan integrasi perangkat penguji IoT.
 
-### 3. [`my_first_module`](./addons/my_first_module/)
-Modul latihan pertama — ekstensi pada Purchase Order untuk menambahkan catatan produk.
+- **GAP-01 (Automated Scrap PR & Journal):** Eksekusi _Fail & Scrap_ otomatis membuat `purchase.request` pengganti dan menjurnal kerugian bahan baku ke `account.move` (_Posted_)
+- **GAP-02 (Cost Variance & Approval):** Perhitungan estimasi vs aktual biaya produksi; selisih biaya `> 10%` memblokir `button_mark_done()` hingga disetujui manager (`group_mrp_cost_approver`)
+- **GAP-03 (Job Costing PDF & Excel COGS):** Cetak sertifikat QC & Job Costing (QWeb PDF dengan Barcode Code128) serta wizard ekspor laporan HPP bulanan (`.xlsx`)
+- **GAP-04 (IoT Telemetry REST API):** Endpoint `POST /api/v1/mrp/qc-result` dengan autentikasi `X-API-Key` beserta simulator [`iot_simulator.py`](./iot_simulator.py)
+
+### 3. Modul Pendukung & Latihan
+
+- [`pos_simple`](./addons/pos_simple/) — Modul latihan Point of Sale sederhana (order, sequence, cancel wizard, receipt PDF)
+- [`my_first_module`](./addons/my_first_module/) — Modul latihan pertama (ekstensi Purchase Order)
 
 ---
 
 ## 🚀 Cara Menjalankan (Docker)
 
 ### Prasyarat
+
 - [Docker](https://docs.docker.com/get-docker/) & [Docker Compose](https://docs.docker.com/compose/install/) terinstal
 
 ### Langkah
@@ -74,9 +87,11 @@ docker-compose.yml
 odoo-dev/
 ├── addons/
 │   ├── purchase_request/     # Modul Purchase Request
-│   ├── mrp_custom_qc/        # Modul MRP + Quality Control
+│   ├── mrp_custom_qc/        # Modul MRP QC, Cost Control, Reporting & IoT API
+│   ├── pos_simple/           # Modul latihan Point of Sale sederhana
 │   └── my_first_module/      # Modul latihan pertama
 ├── config/                   # Konfigurasi Odoo (odoo.conf)
+├── iot_simulator.py          # Script simulator pengirim telemetri IoT
 ├── docker-compose.yml
 └── README.md
 ```
@@ -92,11 +107,11 @@ odoo-dev/
 5. Cari nama modul → **Install**
 
 > Urutan instalasi yang disarankan: `purchase_request` → `mrp_custom_qc`  
-> (karena `mrp_custom_qc` bergantung pada `purchase_request`)
+> (karena `mrp_custom_qc` bergantung pada `mrp`, `account`, dan `purchase_request`)
 
 ---
 
 ## 👤 Author
 
-**Hussain** — Undergraduate IT Student  
-Portofolio project untuk belajar Odoo development.
+**Hussain** — Technical Developer / Undergraduate IT Student  
+Implementasi & pengembangan custom module Odoo 17 Community.
