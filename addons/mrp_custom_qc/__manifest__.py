@@ -4,8 +4,7 @@
     'category': 'Manufacturing',
     'summary': 'Menambahkan fitur Quality Control pada Manufacturing Order',
     'author': 'Hussain',
-    'depends': ['mrp','purchase_request'], 
-    'data':[
+    'depends': ['mrp', 'account', 'purchase_request'],    'data':[
         'views/mrp_production_qc_views.xml',
     ],
     'installable': True,

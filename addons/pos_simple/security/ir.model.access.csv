@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pos_order_simple,pos.order.simple,model_pos_order_simple,,1,1,1,1
+access_pos_order_line_simple,pos.order.line.simple,model_pos_order_line_simple,,1,1,1,1
+access_pos_cancel_wizard,pos.order.cancel.wizard,model_pos_order_cancel_wizard,,1,1,1,1

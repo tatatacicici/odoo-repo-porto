@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<odoo>
+    <record id="seq_pos_order_simple" model="ir.sequence">
+        <field name="name">POS Order Simple</field>
+        <field name="code">pos.order.simple</field>
+        <field name="prefix">POS/%(year)s/</field>
+        <field name="padding">4</field>
+        <field name="number_increment">1</field>
+    </record>
+</odoo>

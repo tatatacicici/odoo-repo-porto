@@ -4,22 +4,70 @@
         <record id="mrp_production_form_view_inherit_qc" model="ir.ui.view">
             <field name="name">mrp.production.form.inherit.qc</field>
             <field name="model">mrp.production</field>
-            <field name="inherit_id" ref="mrp.mrp_production_form_view" />
+            <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
             <field name="arch" type="xml">
+                
+                <!-- 1. Tombol Aksi di Header -->
+                <xpath expr="//header" position="inside">
+                    <button name="action_fail_and_scrap" 
+                            string="Fail &amp; Scrap (Auto PR + Jurnal)" 
+                            type="object" 
+                            class="btn-danger" 
+                            invisible="qc_status != 'pending' or state in ('done', 'cancel')"/>
+                            
+                    <button name="action_request_cost_approval" 
+                            string="Request Manager Approval" 
+                            type="object" 
+                            class="btn-warning" 
+                            invisible="cost_variance_pct &lt;= 10.0 or cost_approval_state != 'normal' or state in ('done', 'cancel')"/>
+
+                    <button name="action_approve_cost" 
+                            string="Approve Cost Overrun" 
+                            type="object" 
+                            class="btn-success" 
+                            groups="mrp_custom_qc.group_mrp_cost_approver"
+                            invisible="cost_approval_state != 'waiting_cost_approval' or state in ('done', 'cancel')"/>
+                </xpath>
+
+                <!-- 2. Tab Quality Control & Cost Variance -->
                 <xpath expr="//notebook" position="inside">
-                    <page string="Quality Control" name="quality_control">
+                    <page string="QC &amp; Cost Control" name="quality_and_cost_control">
                         <group>
-                            <group>
-                                <field name="qc_status" />
-                                <field name="qc_inspector_id" />
+                            <group string="Status Quality Control &amp; IoT Telemetry">
+                                <field name="qc_status"/>
+                                <field name="qc_inspector_id"/>
+                                <field name="iot_voltage"/>
+                                <field name="iot_current"/>
+                                <field name="iot_last_sync"/>
+                                <field name="qc_notes" placeholder="Catatan hasil pengujian QC..."/>
                             </group>
-                            <group>
-                                <field name="qc_notes"
-                                    placeholder="Tulis catatan hasil inspeksi di sini..." />
+                            <group string="Dokumen Otomatis Scrap QC">
+                                <field name="scrap_pr_id"/>
+                                <field name="scrap_move_id"/>
+                                <field name="scrap_cost" widget="monetary"/>
+                            </group>
+                        </group>
+                        <separator string="Analisis Plafon Biaya (BoM vs Realisasi Aktual)"/>
+                        <group>
+                            <group string="Estimasi Standar (BoM)">
+                                <field name="estimated_material_cost" widget="monetary"/>
+                                <field name="estimated_operation_cost" widget="monetary"/>
+                                <field name="estimated_total_cost" widget="monetary" class="fw-bold"/>
+                            </group>
+                            <group string="Realisasi Aktual (Material + Work Center)">
+                                <field name="actual_material_cost" widget="monetary"/>
+                                <field name="actual_operation_cost" widget="monetary"/>
+                                <field name="actual_total_cost" widget="monetary" class="fw-bold"/>
+                                <field name="cost_variance_amount" widget="monetary"/>
+                                <field name="cost_variance_pct"/>
+                                <field name="cost_approval_state" widget="badge" 
+                                       decoration-success="cost_approval_state in ('normal', 'approved')" 
+                                       decoration-warning="cost_approval_state == 'waiting_cost_approval'"/>
                             </group>
                         </group>
                     </page>
                 </xpath>
+                
             </field>
         </record>
     </data>
